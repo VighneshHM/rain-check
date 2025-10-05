@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import CountrySelector from './components/CountrySelector';
 import CitySelector from './components/CitySelector';
 import DateSelector from './components/DateSelector';
-import Dashboard from './components/Dashboard';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -66,11 +65,29 @@ const iconButtonStyle = {
   borderRadius: '10px'
 };
 
+// Helper to clean and format Gemini response text
+const formatResponseText = (text) => {
+  if (!text) return '';
+
+  // Remove markdown asterisks ***
+  let cleanText = text.replace(/\*{1,3}/g, '');
+
+  // Split by multiple newlines to paragraphs
+  const paragraphs = cleanText.split(/\n+/).filter(p => p.trim() !== '');
+
+  return paragraphs.map((p, i) => (
+    <p key={i} style={{ marginBottom: '0.8em', whiteSpace: 'pre-wrap' }}>
+      {p.trim()}
+    </p>
+  ));
+};
+
 const App = () => {
   const [tripName, setTripName] = useState('');
   const [places, setPlaces] = useState([{ country: '', city: '', date: '' }]);
   const [usePrevCountryForNext, setUsePrevCountryForNext] = useState(false);
-  const [weatherResults, setWeatherResults] = useState(null);
+  const [weatherResults, setWeatherResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const addPlace = () => {
     let countryForNext = '';
@@ -107,8 +124,32 @@ const App = () => {
     setPlaces(newPlaces);
   };
 
-  const handleCheckWeather = () => {
-    setWeatherResults([...places]);
+  const handleCheckWeather = async () => {
+    setIsLoading(true);
+    const results = [];
+    for (const place of places) {
+      if (place.city && place.country && place.date) {
+        try {
+          const res = await fetch('http://localhost:5000/weather', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              city: place.city,
+              country: place.country,
+              date: place.date
+            }),
+          });
+          const data = await res.json();
+          results.push({ text: data.text, place });
+        } catch (err) {
+          results.push({ text: `Error: ${err.message}`, place });
+        }
+      } else {
+        results.push({ text: 'Incomplete trip details', place });
+      }
+    }
+    setWeatherResults(results);
+    setIsLoading(false);
   };
 
   const handleDownloadPDF = async () => {
@@ -271,16 +312,20 @@ const App = () => {
         >+ Add Place</button>
         <button
           onClick={handleCheckWeather}
+          disabled={places.some(p => !p.city || !p.country || !p.date) || isLoading}
           style={{
             ...buttonStyle,
-            backgroundColor: '#264653',
+            backgroundColor: isLoading ? '#ccc' : '#264653',
             color: 'white',
-            width: '160px'
+            width: '160px',
+            cursor: isLoading ? 'not-allowed' : 'pointer'
           }}
-        >Check Weather</button>
+        >
+          {isLoading ? 'Loading...' : 'Check Weather'}
+        </button>
       </div>
 
-      {weatherResults && (
+      {weatherResults.length > 0 && (
         <div
           id="weather-results-section"
           style={{
@@ -289,13 +334,23 @@ const App = () => {
             backgroundColor: '#fff',
             padding: '25px',
             borderRadius: '20px',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+            boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+            textAlign: 'left'
           }}>
-          <h2 style={{ color: '#e76f51', marginBottom: '25px' }}>
+          <h2 style={{ color: '#e76f51', marginBottom: '25px', textAlign: 'center' }}>
             {tripName ? `${tripName} - Weather Prediction Results` : 'Weather Prediction Results'}
           </h2>
-          {weatherResults.map((place, idx) => (
-            <Dashboard key={idx} country={place.country} city={place.city} date={place.date} />
+          {weatherResults.map((result, idx) => (
+            <div key={idx} style={{ marginBottom: '20px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
+              <h3>{result.place.city}, {result.place.country} - {result.place.date}</h3>
+              <div>
+                {typeof result.text === 'string'
+                  ? formatResponseText(result.text)
+                  : Array.isArray(result.text.parts)
+                    ? formatResponseText(result.text.parts.map(part => part.text).join(''))
+                    : JSON.stringify(result.text)}
+              </div>
+            </div>
           ))}
           <button
             onClick={handleDownloadPDF}
@@ -304,7 +359,10 @@ const App = () => {
               backgroundColor: '#e9c46a',
               color: '#264653',
               marginTop: '20px',
-              width: '180px'
+              width: '180px',
+              display: 'block',
+              marginLeft: 'auto',
+              marginRight: 'auto'
             }}
           >Download PDF</button>
         </div>
