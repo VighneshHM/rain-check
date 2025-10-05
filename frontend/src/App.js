@@ -3,106 +3,20 @@ import CountrySelector from './components/CountrySelector';
 import CitySelector from './components/CitySelector';
 import DateSelector from './components/DateSelector';
 import Dashboard from './components/Dashboard';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const countriesAndCities = {
-  Argentina: ['Buenos Aires', 'Cali', 'Cartagena', 'Medellín', 'Pereira', 'Santa Marta', 'Ibagué', 'Barranquilla', 'Bucaramanga', 'Cúcuta'],
-  Armenia: ['Abovyan', 'Artashat', 'Dilijan', 'Goris', 'Gyumri', 'Hrazdan', 'Kapan', 'Vanadzor', 'Vagharshapat', 'Yerevan'],
-  Australia: ['Adelaide', 'Brisbane', 'Canberra', 'Gold Coast', 'Logan City', 'Melbourne', 'Newcastle', 'Perth', 'Sydney', 'Wollongong'],
-  Austria: ['Dornbirn', 'Graz', 'Innsbruck', 'Klagenfurt', 'Linz', 'Salzburg', 'St. Pölten', 'Stuttgart', 'Villach', 'Vienna'],
-  Azerbaijan: ['Baku', 'Ganja', 'Khachmaz', 'Lankaran', 'Mingachevir', 'Nakhchivan', 'Shaki', 'Shirvan', 'Sumqayit', 'Yevlakh'],
-  Bangladesh: ['Chittagong', 'Dhaka', 'Khulna', 'Rajshahi', 'Sylhet', 'Barisal', 'Comilla', 'Rangpur', 'Mymensingh', 'Narayanganj'],
-  Belarus: ['Babruysk', 'Baranovichi', 'Brest', 'Gomel', 'Hrodna', 'Minsk', 'Mogilev', 'Orsha', 'Pinsk', 'Vitebsk'],
-  Belgium: ['Antwerp', 'Brussels', 'Charleroi', 'Ghent', 'Liège', 'Bruges', 'Namur', 'Leuven', 'Mons', 'Aalst'],
-  Bolivia: ['Cochabamba', 'La Paz', 'Oruro', 'Potosí', 'Santa Cruz', 'Sucre', 'Tarija', 'Trinidad', 'Montero', 'El Alto'],
-  Brazil: ['Belo Horizonte', 'Brasília', 'Curitiba', 'Fortaleza', 'Manaus', 'Porto Alegre', 'Recife', 'Rio de Janeiro', 'Salvador', 'São Paulo'],
-  Bulgaria: ['Burgas', 'Dobrich', 'Plovdiv', 'Pleven', 'Ruse', 'Sofia', 'Sliven', 'Stara Zagora', 'Varna', 'Veliko Tarnovo'],
-  Canada: ['Calgary', 'Edmonton', 'Hamilton', 'Kitchener', 'Montreal', 'Ottawa', 'Quebec City', 'Toronto', 'Vancouver', 'Winnipeg'],
-  Chile: ['Antofagasta', 'Arica', 'Iquique', 'Puente Alto', 'Rancagua', 'Santiago', 'Talca', 'Temuco', 'Valparaíso', 'Viña del Mar'],
-  China: ['Beijing', 'Chengdu', 'Chongqing', 'Guangzhou', 'Nanjing', 'Shanghai', 'Shenzhen', 'Tianjin', 'Wuhan', 'Xi’an'],
-  Colombia: ['Barranquilla', 'Bucaramanga', 'Cali', 'Cartagena', 'Cúcuta', 'Ibagué', 'Medellín', 'Pereira', 'Santa Marta', 'Bogotá'],
-  CostaRica: ['Alajuela', 'Cartago', 'Guanacaste', 'Heredia', 'Liberia', 'Limón', 'Puntarenas', 'San José', 'Tres Ríos', 'Golfito'],
-  Croatia: ['Dubrovnik', 'Osijek', 'Pula', 'Rijeka', 'Split', 'Zagreb', 'Zadar', 'Slavonski Brod', 'Šibenik', 'Vinkovci'],
-  Cuba: ['Camagüey', 'Havana', 'Holguín', 'Matanzas', 'Pinar del Río', 'Santiago de Cuba', 'Santa Clara', 'Cienfuegos', 'Bayamo', 'Guantánamo'],
-  Cyprus: ['Famagusta', 'Larnaca', 'Limassol', 'Nicosia', 'Paphos', 'Kyrenia', 'Paralimni', 'Morphou', 'Ayia Napa', 'Protaras'],
-  CzechRepublic: ['Brno', 'Ceske Budejovice', 'Hradec Králové', 'Liberec', 'Olomouc', 'Ostrava', 'Plzen', 'Prague', 'Ústí nad Labem', 'Zlín'],
-  Denmark: ['Aarhus', 'Copenhagen', 'Esbjerg', 'Fredericia', 'Gladsaxe', 'Kolding', 'Odense', 'Roskilde', 'Vejle', 'Aalborg'],
-  DominicanRepublic: ['Barahona', 'Bonao', 'Higüey', 'La Romana', 'Moca', 'Puerto Plata', 'San Francisco de Macorís', 'Santo Domingo', 'Santiago de los Caballeros', 'San Pedro de Macorís'],
-  Ecuador: ['Cuenca', 'Guayaquil', 'Loja', 'Manta', 'Portoviejo', 'Quito', 'Santo Domingo', 'Machala', 'Ambato', 'Esmeraldas'],
-  Egypt: ['Alexandria', 'Cairo', 'Giza', 'Luxor', 'Mansoura', 'Port Said', 'Suez', 'Tanta', 'Zagazig', 'Ismailia'],
-  ElSalvador: ['Santa Ana', 'San Miguel', 'San Salvador', 'Sonsonate', 'Soyapango', 'Ahuachapán', 'Chalatenango', 'Usulután', 'La Libertad', 'La Unión'],
-  Estonia: ['Kohtla-Järve', 'Kuressaare', 'Narva', 'Pärnu', 'Rakvere', 'Sillamäe', 'Tallinn', 'Tartu', 'Valga', 'Viljandi'],
-  Finland: ['Espoo', 'Helsinki', 'Jyväskylä', 'Lahti', 'Oulu', 'Tampere', 'Turku', 'Vantaa', 'Kuopio', 'Vaasa'],
-  France: ['Bordeaux', 'Lille', 'Lyon', 'Marseille', 'Montpellier', 'Nantes', 'Nice', 'Paris', 'Strasbourg', 'Toulouse'],
-  Georgia: ['Batumi', 'Gori', 'Khashuri', 'Kutaisi', 'Poti', 'Rustavi', 'Samtredia', 'Telavi', 'Tbilisi', 'Zugdidi'],
-  Germany: ['Berlin', 'Bielefeld', 'Bonn', 'Cologne', 'Dresden', 'Dortmund', 'Düsseldorf', 'Essen', 'Frankfurt', 'Hamburg'],
-  Ghana: ['Accra', 'Ashaiman', 'Cape Coast', 'Koforidua', 'Kumasi', 'Sekondi', 'Takoradi', 'Tamale', 'Tema', 'Obuasi'],
-  Greece: ['Agrinio', 'Chania', 'Heraklion', 'Ioannina', 'Kalamata', 'Larissa', 'Patras', 'Rhodes', 'Thessaloniki', 'Athens'],
-  Guatemala: ['Antigua', 'Chimaltenango', 'Ciudad de Guatemala', 'Escuintla', 'Huehuetenango', 'Mazatenango', 'Quetzaltenango', 'San Marcos', 'Santa Cruz del Quiché', 'Totonicapán'],
-  Honduras: ['Choloma', 'Comayagua', 'Danlí', 'El Progreso', 'La Ceiba', 'Puerto Cortés', 'San Pedro Sula', 'Tegucigalpa', 'Siguatepeque', 'Tela'],
-  Hungary: ['Budapest', 'Debrecen', 'Győr', 'Kecskemét', 'Miskolc', 'Nyíregyháza', 'Pécs', 'Szeged', 'Székesfehérvár', 'Szombathely'],
-  Iceland: ['Akureyri', 'Egilsstaðir', 'Garðabær', 'Hafnarfjörður', 'Kópavogur', 'Mosfellsbær', 'Reykjanesbær', 'Reykjavík', 'Selfoss', 'Vestmannaeyjar'],
-  India: ['Ahmedabad', 'Bangalore', 'Chennai', 'Delhi', 'Hyderabad', 'Jaipur', 'Kolkata', 'Mumbai', 'Pune', 'Surat'],
-  Indonesia: ['Bandung', 'Bekasi', 'Depok', 'Jakarta', 'Medan', 'Semarang', 'Surabaya', 'Tangerang', 'Palembang', 'Makassar'],
-  Ireland: ['Cork', 'Dublin', 'Dundalk', 'Galway', 'Limerick', 'Swords', 'Waterford', 'Bray', 'Navan', 'Tralee'],
-  Israel: ['Ashdod', 'Beersheba', 'Bnei Brak', 'Haifa', 'Jerusalem', 'Netanya', 'Petah Tikva', 'Rishon LeZion', 'Tel Aviv', 'Holon'],
-  Italy: ['Bologna', 'Catania', 'Florence', 'Genoa', 'Milan', 'Naples', 'Palermo', 'Rome', 'Turin', 'Venice'],
-  Jamaica: ['Kingston', 'Spanish Town', 'Portmore', 'Montego Bay', 'Mandeville', 'May Pen', 'Old Harbour', 'Linstead', 'Black River', 'Port Antonio'],
-  Japan: ['Fukuoka', 'Hiroshima', 'Kawasaki', 'Kobe', 'Kyoto', 'Nagoya', 'Osaka', 'Sapporo', 'Saitama', 'Tokyo'],
-  Jordan: ['Amman', 'Aqaba', 'Irbid', 'Jerash', 'Karak', 'Mafraq', 'Madaba', 'Russeifa', 'Zarqa', 'Al-Salt'],
-  Kazakhstan: ['Aktobe', 'Almaty', 'Karaganda', 'Kokshetau', 'Kyzylorda', 'Nur-Sultan', 'Pavlodar', 'Petropavl', 'Shymkent', 'Taldykorgan'],
-  Kenya: ['Eldoret', 'Kakamega', 'Kisumu', 'Mombasa', 'Nairobi', 'Nakuru', 'Thika', 'Garissa', 'Homa Bay', 'Kitale'],
-  Kuwait: ['Al Ahmadi', 'Al Farwaniyah', 'Al Jahra', 'Hawalli', 'Kuwait City', 'Mubarak Al-Kabeer'],
-  Latvia: ['Daugavpils', 'Jelgava', 'Jūrmala', 'Liepāja', 'Rēzekne', 'Rīga', 'Salaspils', 'Valmiera', 'Ventspils', 'Jēkabpils'],
-  Lebanon: ['Aley', 'Batroun', 'Beirut', 'Byblos', 'Damour', 'Jounieh', 'Nabatieh', 'Sidon', 'Tripoli', 'Zahle'],
-  Lithuania: ['Alytus', 'Kaunas', 'Klaipėda', 'Marijampolė', 'Mazeikiai', 'Panevėžys', 'Šiauliai', 'Tauragė', 'Vilnius', 'Utena'],
-  Luxembourg: ['Esch-sur-Alzette', 'Luxembourg City', 'Differdange', 'Dudelange', 'Ettelbruck', 'Diekirch', 'Remich', 'Wiltz', 'Grevenmacher', 'Clervaux'],
-  Malaysia: ['Alor Setar', 'George Town', 'Ipoh', 'Johor Bahru', 'Kota Kinabalu', 'Kuala Lumpur', 'Kuantan', 'Melaka', 'Petaling Jaya', 'Shah Alam'],
-  Malta: ['Birkirkara', 'Birżebbuġa', 'Fgura', 'Floriana', 'Gzira', 'Kalkara', 'Marsaskala', 'Marsaxlokk', 'Mdina', 'Sliema'],
-  Mexico: ['Aguascalientes', 'Cancún', 'Chihuahua', 'Ciudad Juárez', 'Guadalajara', 'León', 'Mexico City', 'Monterrey', 'Querétaro', 'Tijuana'],
-  Morocco: ['Agadir', 'Casablanca', 'Fes', 'Kenitra', 'Marrakech', 'Meknes', 'Oujda', 'Rabat', 'Safi', 'Tangier'],
-  Myanmar: ['Bago', 'Hpa-an', 'Kawthaung', 'Kengtung', 'Lashio', 'Mandalay', 'Mawlamyine', 'Myitkyina', 'Naypyidaw', 'Yangon'],
-  Namibia: ['Gobabis', 'Katima Mulilo', 'Lüderitz', 'Okahandja', 'Ongwediva', 'Oshakati', 'Otjiwarongo', 'Rundu', 'Swakopmund', 'Windhoek'],
-  Nepal: ['Biratnagar', 'Butwal', 'Dharan', 'Hetauda', 'Itahari', 'Janakpur', 'Kathmandu', 'Lalitpur', 'Pokhara', 'Bhaktapur'],
-  Netherlands: ['Almere', 'Amersfoort', 'Amsterdam', 'Arnhem', 'Breda', 'Dordrecht', 'Eindhoven', 'Groningen', 'Maastricht', 'Rotterdam'],
-  NewZealand: ['Auckland', 'Christchurch', 'Dunedin', 'Hamilton', 'Napier', 'Palmerston North', 'Rotorua', 'Tauranga', 'Wellington', 'Whangarei'],
-  Nicaragua: ['Bluefields', 'Chinandega', 'Estelí', 'Jinotega', 'León', 'Managua', 'Masaya', 'Matagalpa', 'Ocotal', 'Rivas'],
-  Nigeria: ['Enugu', 'Ibadan', 'Ikeja', 'Ilorin', 'Jos', 'Kaduna', 'Kano', 'Lagos', 'Port Harcourt', 'Benin City'],
-  Norway: ['Bergen', 'Drammen', 'Fredrikstad', 'Kristiansand', 'Lillehammer', 'Oslo', 'Porsgrunn', 'Sandnes', 'Skien', 'Trondheim'],
-  Oman: ['Al Buraimi', 'Ibri', 'Muscat', 'Nizwa', 'Salalah', 'Seeb', 'Sohar', 'Sur', 'Saham', 'Rustaq'],
-  Pakistan: ['Faisalabad', 'Gujranwala', 'Hyderabad', 'Islamabad', 'Karachi', 'Lahore', 'Multan', 'Peshawar', 'Quetta', 'Rawalpindi'],
-  Panama: ['Arraiján', 'Chitré', 'Colón', 'David', 'La Chorrera', 'Las Cumbres', 'Penonomé', 'San Miguelito', 'Santiago', 'Tocumen'],
-  Paraguay: ['Asunción', 'Ciudad del Este', 'Concepción', 'Coronel Oviedo', 'Encarnación', 'Luque', 'Mariano Roque Alonso', 'Pedro Juan Caballero', 'San Lorenzo', 'Villarrica'],
-  Peru: ['Arequipa', 'Cusco', 'Huancayo', 'Iquitos', 'Lima', 'Puno', 'Tacna', 'Tarapoto', 'Trujillo', 'Chiclayo'],
-  Philippines: ['Antipolo', 'Baguio', 'Cabanatuan', 'Cagayan de Oro', 'Caloocan', 'Davao City', 'General Santos', 'Iloilo City', 'Manila', 'Quezon City'],
-  Poland: ['Białystok', 'Bydgoszcz', 'Gdańsk', 'Katowice', 'Kraków', 'Lublin', 'Łódź', 'Poznań', 'Szczecin', 'Warsaw'],
-  Portugal: ['Agualva-Cacém', 'Amadora', 'Braga', 'Coimbra', 'Funchal', 'Lisbon', 'Porto', 'Setúbal', 'Vila Nova de Gaia', 'Viseu'],
-  Qatar: ['Al Daayen', 'Al Khor', 'Al Rayyan', 'Al Shamal', 'Al Wakrah', 'Doha', 'Madīnat ash Shamāl', 'Mesaieed', 'Umm Salal Mohammed', 'Al Shahaniya'],
-  Romania: ['Bacău', 'Baia Mare', 'Bucharest', 'Cluj-Napoca', 'Constanța', 'Craiova', 'Galați', 'Iași', 'Oradea', 'Timișoara'],
-  Russia: ['Chelyabinsk', 'Kazan', 'Moscow', 'Nizhny Novgorod', 'Novosibirsk', 'Omsk', 'Rostov-on-Don', 'Samara', 'Saint Petersburg', 'Yekaterinburg'],
-  SaudiArabia: ['Abha', 'Al Khobar', 'Al Madinah', 'Dammam', 'Hafr Al-Batin', 'Jeddah', 'Khamis Mushait', 'Makkah', 'Riyadh', 'Tabuk'],
-  Serbia: ['Belgrade', 'Čačak', 'Kragujevac', 'Kraljevo', 'Niš', 'Novi Sad', 'Pančevo', 'Požarevac', 'Subotica', 'Zrenjanin'],
-  Singapore: ['Singapore'],
-  Slovakia: ['Banská Bystrica', 'Bratislava', 'Košice', 'Martin', 'Nitra', 'Prešov', 'Trenčín', 'Trnava', 'Žilina', 'Poprad'],
-  Slovenia: ['Celje', 'Koper', 'Kranj', 'Ljubljana', 'Maribor', 'Murska Sobota', 'Novo Mesto', 'Ptuj', 'Slovenj Gradec', 'Velenje'],
-  SouthAfrica: ['Cape Town', 'Durban', 'East London', 'Johannesburg', 'Mbombela', 'Nelson Mandela Bay', 'Pietermaritzburg', 'Polokwane', 'Pretoria', 'Tshwane'],
-  SouthKorea: ['Busan', 'Changwon', 'Daegu', 'Daejeon', 'Gwangju', 'Incheon', 'Seongnam', 'Seoul', 'Suwon', 'Ulsan'],
-  Spain: ['Alicante', 'Barcelona', 'Bilbao', 'Madrid', 'Málaga', 'Murcia', 'Palma', 'Seville', 'Valencia', 'Zaragoza'],
-  SriLanka: ['Colombo', 'Galle', 'Jaffna', 'Kandy', 'Matara', 'Negombo', 'Nuwara Eliya', 'Trincomalee', 'Anuradhapura', 'Ratnapura'],
-  Sweden: ['Gothenburg', 'Helsingborg', 'Jönköping', 'Linköping', 'Lund', 'Malmö', 'Norrköping', 'Södertälje', 'Stockholm', 'Uppsala'],
-  Switzerland: ['Basel', 'Bern', 'Geneva', 'Lausanne', 'Lucerne', 'St. Gallen', 'Winterthur', 'Zug', 'Zurich', 'Lugano'],
-  Taiwan: ['Banqiao', 'Hsinchu', 'Kaohsiung', 'New Taipei', 'Taichung', 'Tainan', 'Taipei', 'Taitung', 'Taiyuan', 'Yilan'],
-  Tanzania: ['Arusha', 'Dar es Salaam', 'Dodoma', 'Mwanza', 'Mbeya', 'Tanga', 'Zanzibar City', 'Morogoro', 'Moshi', 'Musoma'],
-  Thailand: ['Bangkok', 'Chiang Mai', 'Hat Yai', 'Khon Kaen', 'Nakhon Ratchasima', 'Nakhon Si Thammarat', 'Pattaya', 'Phuket', 'Udon Thani', 'Ubon Ratchathani'],
-  Tunisia: ['Ariana', 'Bizerte', 'El Kef', 'Gabès', 'Gafsa', 'La Marsa', 'Sfax', 'Sousse', 'Tunis', 'Zarzis'],
-  Turkey: ['Adana', 'Antalya', 'Ankara', 'Bursa', 'Gaziantep', 'Istanbul', 'Kayseri', 'Konya', 'Mersin', 'Samsun'],
-  Uganda: ['Gulu', 'Jinja', 'Kampala', 'Lira', 'Masaka', 'Mbarara', 'Mukono', 'Soroti', 'Tororo', 'Wakiso'],
-  Ukraine: ['Chernihiv', 'Dnipro', 'Donetsk', 'Kharkiv', 'Kherson', 'Kiev', 'Lviv', 'Odessa', 'Poltava', 'Vinnytsia'],
-  UnitedArabEmirates: ['Abu Dhabi', 'Ajman', 'Al Ain', 'Dubai', 'Fujairah', 'Ras Al Khaimah', 'Sharjah', 'Umm Al Quwain'],
-  UnitedKingdom: ['Birmingham', 'Bradford', 'Edinburgh', 'Glasgow', 'Leeds', 'Liverpool', 'London', 'Manchester', 'Sheffield', 'Wakefield'],
-  Uruguay: ['Artigas', 'Bella Unión', 'Durazno', 'Florida', 'Maldonado', 'Mercedes', 'Melo', 'Minas', 'Paysandú', 'Salto'],
-  Uzbekistan: ['Andijon', 'Bukhara', 'Fergana', 'Jizzax', 'Margilan', 'Nukus', 'Qarshi', 'Samarqand', 'Toshkent', 'Urganch'],
-  Venezuela: ['Barquisimeto', 'Caracas', 'Ciudad Guayana', 'Ciudad Bolívar', 'Coro', 'Maturín', 'Maracaibo', 'Maracay', 'Valencia', 'Puerto la Cruz'],
-  Vietnam: ['Can Tho', 'Da Nang', 'Haiphong', 'Hanoi', 'Ho Chi Minh City', 'Hue', 'Nha Trang', 'Qui Nhon', 'Vinh', 'Buon Ma Thuot']
+  USA: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'],
+  India: ['Delhi', 'Mumbai', 'Bangalore', 'Kolkata', 'Chennai', 'Hyderabad', 'Ahmedabad', 'Pune', 'Surat', 'Jaipur'],
+  Australia: ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Canberra', 'Newcastle', 'Wollongong', 'Logan City'],
+  Canada: ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Winnipeg', 'Quebec City', 'Hamilton', 'Kitchener'],
+  UK: ['London', 'Birmingham', 'Leeds', 'Glasgow', 'Sheffield', 'Bradford', 'Liverpool', 'Edinburgh', 'Manchester', 'Bristol'],
+  Germany: ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig'],
+  France: ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'],
+  China: ['Shanghai', 'Beijing', 'Chongqing', 'Tianjin', 'Guangzhou', 'Shenzhen', 'Chengdu', 'Nanjing', 'Wuhan', 'Xi’an'],
+  Japan: ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Fukuoka', 'Kobe', 'Kyoto', 'Kawasaki', 'Saitama'],
+  Brazil: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre']
 };
 
 const sortedCountries = Object.keys(countriesAndCities).sort();
@@ -115,7 +29,7 @@ const boxStyle = {
   marginBottom: '25px',
   maxWidth: '400px',
   boxSizing: 'border-box',
-  textAlign: 'left'  // Left align content inside box
+  textAlign: 'left'
 };
 
 const labelStyle = {
@@ -153,6 +67,7 @@ const iconButtonStyle = {
 };
 
 const App = () => {
+  const [tripName, setTripName] = useState('');
   const [places, setPlaces] = useState([{ country: '', city: '', date: '' }]);
   const [usePrevCountryForNext, setUsePrevCountryForNext] = useState(false);
   const [weatherResults, setWeatherResults] = useState(null);
@@ -196,6 +111,20 @@ const App = () => {
     setWeatherResults([...places]);
   };
 
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById('weather-results-section');
+    if (!element) return;
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height]
+    });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save(tripName ? `${tripName}-WeatherResults.pdf` : 'WeatherResults.pdf');
+  };
+
   return (
     <div style={{
       fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
@@ -209,6 +138,40 @@ const App = () => {
         Rain Check - Weather Dashboard
       </h1>
 
+      {/* Trip Name field */}
+      <div style={{ maxWidth: '400px', margin: '0 auto 30px', textAlign: 'left' }}>
+        <label
+          htmlFor="tripName"
+          style={{
+            fontWeight: '600',
+            color: '#264653',
+            fontSize: '18px',
+            marginBottom: '8px',
+            display: 'block'
+          }}
+        >
+          Trip Name
+        </label>
+        <input
+          id="tripName"
+          type="text"
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            fontSize: '18px',
+            borderRadius: '12px',
+            border: '1.5px solid #ccc',
+            outline: 'none',
+            marginBottom: '22px',
+            boxSizing: 'border-box'
+          }}
+          placeholder="Name your trip (e.g., Europe Adventure)"
+          value={tripName}
+          onChange={e => setTripName(e.target.value)}
+          maxLength={48}
+        />
+      </div>
+
       {/* Flex container for place boxes */}
       <div style={{
         display: 'flex',
@@ -220,7 +183,7 @@ const App = () => {
         {places.map((place, idx) => (
           <div key={idx} style={{
             ...boxStyle,
-            flex: '0 0 400px'  // fixed width, no grow or shrink
+            flex: '0 0 400px'
           }}>
             <label style={labelStyle}>Country</label>
             <select
@@ -291,7 +254,7 @@ const App = () => {
             onChange={e => setUsePrevCountryForNext(e.target.checked)}
             disabled={places.length === 0 || !places[places.length - 1].country}
           />
-          Use previous place&apos;s country for next destination
+          Use previous place's country for next destination
         </label>
       </div>
 
@@ -318,18 +281,32 @@ const App = () => {
       </div>
 
       {weatherResults && (
-        <div style={{
-          maxWidth: '600px',
-          margin: 'auto',
-          backgroundColor: '#fff',
-          padding: '25px',
-          borderRadius: '20px',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
-        }}>
-          <h2 style={{ color: '#e76f51', marginBottom: '25px' }}>Weather Prediction Results</h2>
+        <div
+          id="weather-results-section"
+          style={{
+            maxWidth: '600px',
+            margin: 'auto',
+            backgroundColor: '#fff',
+            padding: '25px',
+            borderRadius: '20px',
+            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+          }}>
+          <h2 style={{ color: '#e76f51', marginBottom: '25px' }}>
+            {tripName ? `${tripName} - Weather Prediction Results` : 'Weather Prediction Results'}
+          </h2>
           {weatherResults.map((place, idx) => (
             <Dashboard key={idx} country={place.country} city={place.city} date={place.date} />
           ))}
+          <button
+            onClick={handleDownloadPDF}
+            style={{
+              ...buttonStyle,
+              backgroundColor: '#e9c46a',
+              color: '#264653',
+              marginTop: '20px',
+              width: '180px'
+            }}
+          >Download PDF</button>
         </div>
       )}
     </div>
